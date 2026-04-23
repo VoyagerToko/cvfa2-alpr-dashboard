@@ -37,8 +37,18 @@ python -m venv .venv
 # Linux/macOS
 # source .venv/bin/activate
 
-pip install -r requirements.txt
+# Full ALPR stack (training + API + dashboard)
+pip install -r requirements-full.txt
+
+# Streamlit Cloud uses requirements.txt (lightweight dashboard profile)
 ```
+
+### Streamlit Cloud Quick Deploy
+
+- Repository: `VoyagerToko/cvfa2-alpr-dashboard`
+- Branch: `main`
+- Main file path: `streamlit_app.py`
+- Python: `3.11`
 
 ## 3. Data Preparation
 
@@ -115,6 +125,8 @@ streamlit run src/dashboard/app.py
 docker build -t alpr-system:latest .
 docker run -p 8000:8000 alpr-system:latest
 ```
+
+Docker image uses `requirements-full.txt` for API/training dependencies.
 
 ## 9. Monitoring
 
