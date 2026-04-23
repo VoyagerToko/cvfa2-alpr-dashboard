@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import asdict
 from itertools import count
 
 import cv2
@@ -60,7 +61,7 @@ async def predict_image(
         frame_index=next(frame_counter),
         persist=True,
     )
-    return ImagePredictionResponse(**event.__dict__)
+    return ImagePredictionResponse(**asdict(event))
 
 
 @app.get("/events")
@@ -93,4 +94,4 @@ def drift(baseline_accuracy: float, current_accuracy: float, threshold: float = 
         baseline_accuracy=baseline_accuracy,
         current_accuracy=current_accuracy,
     )
-    return report.__dict__
+    return asdict(report)

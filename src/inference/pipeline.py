@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -167,7 +167,7 @@ class ALPRInferencePipeline:
         )
 
         if persist and self.event_store is not None:
-            self.event_store.insert_event(event.__dict__)
+            self.event_store.insert_event(asdict(event))
 
         return event
 

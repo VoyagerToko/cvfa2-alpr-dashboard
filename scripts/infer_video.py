@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+from dataclasses import asdict
 from pathlib import Path
 
 import cv2
@@ -93,7 +94,7 @@ def main() -> None:
             frame_index=frame_index,
             persist=True,
         )
-        rows.append(event.__dict__)
+        rows.append(asdict(event))
 
         annotated = pipeline.annotate_frame(frame, event)
         if writer is not None:
