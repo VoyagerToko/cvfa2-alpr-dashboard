@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: alpr-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_CONFIG=configs/default.yaml
+      - MODEL_CHECKPOINT=checkpoints/best_model.pt
+      - SQLITE_DB_PATH=artifacts/parking_events.sqlite3
+      - DEFAULT_ZONE_MAP=configs/zone_map.json
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./checkpoints:/app/checkpoints
+    restart: unless-stopped
+
+  dashboard:
+    build: .
+    container_name: alpr-dashboard
+    command: streamlit run src/dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - SQLITE_DB_PATH=artifacts/parking_events.sqlite3
+    volumes:
+      - ./artifacts:/app/artifacts
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: alpr-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    container_name: alpr-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  grafana-storage:

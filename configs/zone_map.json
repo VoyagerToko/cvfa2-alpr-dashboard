@@ -1,0 +1,6 @@
+{
+  "entry_cam_1": "ZONE_A",
+  "entry_cam_2": "ZONE_B",
+  "basement_cam_1": "ZONE_C",
+  "roof_cam_1": "ZONE_D"
+}

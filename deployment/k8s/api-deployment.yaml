@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpr-api
+  labels:
+    app: alpr-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: alpr-api
+  template:
+    metadata:
+      labels:
+        app: alpr-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/your-org/alpr-system:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_CONFIG
+              value: configs/default.yaml
+            - name: MODEL_CHECKPOINT
+              value: checkpoints/best_model.pt
+            - name: SQLITE_DB_PATH
+              value: /app/artifacts/parking_events.sqlite3
+            - name: DEFAULT_ZONE_MAP
+              value: configs/zone_map.json
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpr-api-service
+spec:
+  selector:
+    app: alpr-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer

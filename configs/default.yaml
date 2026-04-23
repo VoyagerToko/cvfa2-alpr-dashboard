@@ -1,0 +1,73 @@
+seed: 42
+
+paths:
+  raw_manifest: data/raw/manifest.csv
+  processed_dir: data/processed
+  real_world_eval_dir: data/real_world_eval
+  checkpoints_dir: checkpoints
+  artifacts_dir: artifacts
+
+data:
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+  image_size: [224, 448]
+  num_workers: 0
+  pin_memory: true
+  batch_size: 16
+  max_plate_length: 12
+  annotation_format: csv
+  csv_columns:
+    image_path: image_path
+    plate_text: plate_text
+    x_min: x_min
+    y_min: y_min
+    x_max: x_max
+    y_max: y_max
+
+preprocessing:
+  normalize_mean: [0.485, 0.456, 0.406]
+  normalize_std: [0.229, 0.224, 0.225]
+  augment:
+    rotation_limit: 8
+    blur_limit: 5
+    brightness_limit: 0.2
+
+cv_localization:
+  threshold_value: 180
+  threshold_max: 255
+  canny_low: 80
+  canny_high: 180
+  min_plate_area_ratio: 0.005
+  max_plate_area_ratio: 0.20
+  enable_perspective_correction: true
+
+model:
+  detector_backbone: resnet18
+  recognizer_backbone: efficientnet_b0
+  feature_dim: 512
+  transformer_d_model: 256
+  transformer_nhead: 8
+  transformer_layers: 4
+  transformer_ff_dim: 1024
+  dropout: 0.1
+  vocab: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+training:
+  epochs: 20
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  grad_clip_norm: 1.0
+  ctc_loss_weight: 1.0
+  detector_loss_weight: 1.0
+  mixed_precision: false
+
+inference:
+  detector_confidence: 0.5
+  duplicate_window_seconds: 20
+  duplicate_levenshtein_threshold: 1
+  tracker_max_distance: 90
+
+analytics:
+  default_zone: UNKNOWN
+  occupancy_timeout_seconds: 300
